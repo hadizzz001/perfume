@@ -4,26 +4,52 @@ import { FaInstagram, FaFacebookF, FaWhatsapp, FaLinkedinIn, FaTiktok } from "re
 import React, { useEffect, useState, useRef } from "react";
 
 const Footer = () => {
-    const [showPolicies, setShowPolicies] = useState(false);
+ const [showPolicies, setShowPolicies] = useState(false);
     const [showCustomerCare, setShowCustomerCare] = useState(false);
-    const [showServices, setShowServices] = useState(false);
-      const [checkboxesData, setCheckboxesData] = useState([]);
+    const [showCategories, setShowCategories] = useState(false);
+    const [checkboxesData, setCheckboxesData] = useState([]);
 
-
-
-      useEffect(() => {
+    useEffect(() => {
         const fetchCategories = async () => {
-          try {
-            const response = await fetch("/api/category");
-            const data = await response.json();
-            setCheckboxesData(data);
-          } catch (error) {
-            console.error("Error fetching categories:", error);
-          }
+            try {
+                const response = await fetch("/api/category");
+                const data = await response.json();
+                setCheckboxesData(data);
+            } catch (error) {
+                console.error("Error fetching categories:", error);
+            }
         };
-    
         fetchCategories();
-      }, []);
+    }, []);
+
+    const mobileSections = [
+        {
+            label: 'Policies',
+            isOpen: showPolicies,
+            setOpen: setShowPolicies,
+            items: [
+                { href: '/privacy', text: 'Privacy Policy' },
+                { href: '/term', text: 'Terms of Service' },
+            ],
+        },
+        {
+            label: 'Customer Care',
+            isOpen: showCustomerCare,
+            setOpen: setShowCustomerCare,
+            items: [
+                { href: '/contact', text: 'Contact Us' },
+            ],
+        },
+        {
+            label: 'Category', // changed from Services to Category
+            isOpen: showCategories,
+            setOpen: setShowCategories,
+            items: checkboxesData.map(cat => ({
+                href: "/search?cat=" + encodeURIComponent(cat.name),
+                text: cat.name
+            })),
+        },
+    ];
 
     return (
         <footer className="bg-[#f8f8f8] text-[#222] py-10 px-4">
@@ -134,60 +160,24 @@ const Footer = () => {
 
 
 
-            {/* MOBILE FOOTER */}
+  {/* MOBILE FOOTER */}
             <div id='mymobfoot' className="block md:hidden text-sm space-y-6 mt-20 mb-20">
-                {/* Reusable toggle section */}
-                {[
-                    {
-                        label: 'Policies',
-                        isOpen: showPolicies,
-                        setOpen: setShowPolicies,
-                        items: [
-                            { href: '/privacy', text: 'Privacy Policy' },
-                            { href: '/term', text: 'Terms of Service' },
-                        ],
-                    },
-                    {
-                        label: 'Customer Care',
-                        isOpen: showCustomerCare,
-                        setOpen: setShowCustomerCare,
-                        items: [
-                            { href: '/contact', text: 'Contact Us' },
-                        ],
-                    },
-                    {
-                        label: 'Services',
-                        isOpen: showServices,
-                        setOpen: setShowServices,
-                        items: [
-                            { href: '/services', text: 'Services' },
-                            { href: '/ext', text: 'Extensions' },
-                        ],
-                    },
-                ].map(({ label, isOpen, setOpen, items }, index) => (
+                {mobileSections.map(({ label, isOpen, setOpen, items }, index) => (
                     <div key={index}>
                         <div
                             className="flex justify-between items-center cursor-pointer"
                             onClick={() => setOpen(!isOpen)}
                         >
                             <p className="myfp">{label}</p>
-                            <div
-                                className={`transition-transform duration-300 ${isOpen ? 'rotate-180' : 'rotate-0'
-                                    }`}
-                            >
+                            <div className={`transition-transform duration-300 ${isOpen ? 'rotate-180' : 'rotate-0'}`}>
                                 <FaChevronDown />
                             </div>
                         </div>
-                        <div
-                            className={`overflow-hidden transition-all duration-500 ease-in-out ${isOpen ? 'max-h-40 opacity-100' : 'max-h-0 opacity-0'
-                                }`}
-                        >
-                            <ul className="mt-2 space-y-2 ">
+                        <div className={`overflow-hidden transition-all duration-500 ease-in-out ${isOpen ? 'max-h-40 opacity-100' : 'max-h-0 opacity-0'}`}>
+                            <ul className="mt-2 space-y-2">
                                 {items.map((item, i) => (
                                     <li key={i}>
-                                        <a href={item.href} className="colorp">
-                                            {item.text}
-                                        </a>
+                                        <a href={item.href} className="colorp">{item.text}</a>
                                     </li>
                                 ))}
                             </ul>
@@ -196,50 +186,21 @@ const Footer = () => {
                     </div>
                 ))}
 
- <div className="flex justify-center gap-6 mt-4">
-      <a
-        href="https://www.instagram.com/il_profvmo/"
-        target="_blank"
-        rel="noopener noreferrer"
-        className="text-[#666] hover:text-black text-2xl"
-      >
-        <FaInstagram />
-      </a>
-      {/* <a
-        href="https://www.facebook.com/1raffidahamhairdressing/"
-        target="_blank"
-        rel="noopener noreferrer"
-        className="text-[#666] hover:text-black text-2xl"
-      >
-        <FaFacebookF />
-      </a> */}
-      <a
-        href="https://wa.me/9613018700"
-        target="_blank"
-        rel="noopener noreferrer"
-        className="text-[#666] hover:text-black text-2xl"
-      >
-        <FaWhatsapp />
-      </a>
- 
-      {/* <a
-        href="https://www.tiktok.com/@rafidaham_hairdressing"
-        target="_blank"
-        rel="noopener noreferrer"
-        className="text-[#666] hover:text-black text-2xl"
-      >
-        <FaTiktok />
-      </a> */}
-    </div>
-
-              
+                {/* Social Icons */}
+                <div className="flex justify-center gap-6 mt-4">
+                    <a href="https://www.instagram.com/il_profvmo/" target="_blank" rel="noopener noreferrer" className="text-[#666] hover:text-black text-2xl">
+                        <FaInstagram />
+                    </a>
+                    <a href="https://wa.me/9613018700" target="_blank" rel="noopener noreferrer" className="text-[#666] hover:text-black text-2xl">
+                        <FaWhatsapp />
+                    </a>
+                </div>
 
                 <div className="text-center mt-20 mb-20">
                     <p className="text-sm uppercase">
                         Zayana {new Date().getFullYear()} ALL RIGHTS RESERVED
                     </p>
                 </div>
-
             </div>
 
 
