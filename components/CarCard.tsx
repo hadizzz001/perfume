@@ -22,11 +22,11 @@ const CarCard = ({ temp }: CarCardProps) => {
             className="max-w-full max-h-full object-contain"
           />
         </div>
-        <div className="px-2 text-center mt-2"> 
+        {/* <div className="px-2 text-center mt-2"> 
           <p className="myP1">{category}</p>
-        </div>
+        </div> */}
         {/* Title */}
-        <div className="myProduct1 px-2 text-center">{title}</div>
+        <div className="myProduct1 px-2 text-center mt-2">{title}</div>
 
         {/* Description & Category */}
 

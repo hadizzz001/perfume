@@ -15,20 +15,31 @@ const Body = () => {
   const [page, setPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
 
-  const fetchProducts = async (pageNum = 1) => {
-    const params = new URLSearchParams();
+const fetchProducts = async (pageNum = 1) => {
+  const params = new URLSearchParams();
+  params.append('page', pageNum);
+  params.append('limit', 10);
 
-    params.append('page', pageNum);
-    params.append('limit', 10);
+  checkedCategories.forEach(cat => params.append('category', cat));
 
-    checkedCategories.forEach(cat => params.append('category', cat));
+  const res = await fetch(`/api/productsz?${params.toString()}`);
+  const data = await res.json();
 
-    const res = await fetch(`/api/productsz?${params.toString()}`);
-    const data = await res.json();
+  let filteredProducts = data.products;
 
-    setTemp(data.products);
-    setTotalPages(data.totalPages);
-  };
+  // Apply custom filtering logic
+  if (checkedCategories.includes("Ladies")) {
+    // Show all products (no filter needed)
+    filteredProducts = data.products;
+  } else if (checkedCategories.includes("Gents")) {
+    filteredProducts = data.products.filter(p => p.title !== "Powder");
+  } else if (checkedCategories.includes("Unisex")) {
+    filteredProducts = data.products.filter(p => p.title !== "Powder");
+  }
+
+  setTemp(filteredProducts);
+  setTotalPages(data.totalPages);
+};
 
 
 

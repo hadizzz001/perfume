@@ -15,7 +15,7 @@ const YourComponent = () => {
       const response = await fetch('/api/products', { cache: 'no-store' });
       if (response.ok) {
         const data = await response.json();
-        setAllTemps(data.slice(-4)); // first 10 items
+        setAllTemps(data.slice(-10)); // first 10 items
       } else {
         console.error('Failed to fetch categories');
       }

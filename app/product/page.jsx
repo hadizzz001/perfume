@@ -69,21 +69,27 @@ const Page = () => {
   }
 
 
-  useEffect(() => {
-    if (cat) {
-      const fetchData = async () => {
-        try {
-          const response = await fetch(`api/products1/${cat}`);
-          const data = await response.json();
-          setAllTemps2(data.slice(0, 5));  // Only take first 5 items
-        } catch (error) {
-          console.error("Error fetching the description:", error);
-        }
-      };
+useEffect(() => {
+  if (cat) {
+    const fetchData = async () => {
+      try {
+        const response = await fetch(`api/products`);
+        const data = await response.json();
 
-      fetchData();
-    }
-  }, [cat]);
+        // Filter out items where data.title equals the given title
+        const filteredData = data.filter(item => item.title !== title);
+
+        // Take only the first 5 items after filtering
+        setAllTemps2(filteredData.slice(0, 5));
+      } catch (error) {
+        console.error("Error fetching the description:", error);
+      }
+    };
+
+    fetchData();
+  }
+}, [cat, title]); // make sure 'title' is included in dependency array
+
 
 
 
@@ -248,9 +254,7 @@ const Page = () => {
                       {title}
                       <span className="ProductSelector_EditionLabel" style={{ margin: "0 0 0 3px" }} />
                     </h1>
-                    <p className='mb-2 myGray'>
-                      Category: {cat}
-                    </p>
+
 
                   </span>
                   <div className="ApexPriceAndFreeShippingWrapper">
@@ -350,7 +354,7 @@ const Page = () => {
 
                           <p className="myP2">
                             ${displayedPrice}
-                           
+
                           </p>
                         </div>
                       ) : (
@@ -360,7 +364,7 @@ const Page = () => {
                       <div className="flex items-center space-x-2">
                         <h1 className="mb-2 myGray line-through myP2">${parseFloat(price).toFixed(2)}</h1>
                         <h1 className="mb-2 myP3">
-                          USD ${discount} 
+                          USD ${discount}
                         </h1>
                       </div>
                     )}
@@ -423,12 +427,12 @@ const Page = () => {
                             <div className=""></div>
                           </div>
                         </form>
-                    <span className="ProvidersIfSelectedProductMatchesFilter">
-                      <p
-                        className='myGray'
-                        dangerouslySetInnerHTML={{ __html: desc }}
-                      /><br />
-                    </span>
+                        <span className="ProvidersIfSelectedProductMatchesFilter">
+                          <p
+                            className='myGray'
+                            dangerouslySetInnerHTML={{ __html: desc }}
+                          /><br />
+                        </span>
                       </div>
                     )}
                     <br />
@@ -448,24 +452,29 @@ const Page = () => {
                   }} />
                   <div className="ProductTile-SliderContainer ProductTile-SliderContainer--YMAL container mb-20" data-product-list-category="ymal-slider">
                     <div className="ProductTile-SliderContainer-Title br_text-3xl-serif br_text-white myGray">You might also like:</div>
-                    {allTemp2 && allTemp2?.length > 0 ? (
+                    {allTemp2 && allTemp2.length > 0 ? (
                       <section style={{ maxWidth: "100%" }}>
-                        <Swiper spaceBetween={20} loop modules={[Autoplay]} autoplay={{
-                          delay: 2000,
-                          stopOnLastSlide: false,
-                          reverseDirection: true
-                        }} breakpoints={{
-                          150: {
-                            slidesPerView: 2,
-                          },
-                          768: {
-                            slidesPerView: 4,
-                          },
-                        }}>
+                        <Swiper
+                          spaceBetween={20}
+                          loop
+                          modules={[Autoplay]}
+                          autoplay={{
+                            delay: 2000,
+                            stopOnLastSlide: false,
+                            reverseDirection: true,
+                          }}
+                          breakpoints={{
+                            150: { slidesPerView: 2 },
+                            768: { slidesPerView: 4 },
+                          }}
+                        >
                           <div className='home__cars-wrapper'>
-                            {allTemp2.map((temp) => (
-                              <SwiperSlide key={temp._id}><CarCard temp={temp} /></SwiperSlide>
-                            ))}
+                            {allTemp2 
+                              .map((temp) => (
+                                <SwiperSlide key={temp._id}>
+                                  <CarCard temp={temp} />
+                                </SwiperSlide>
+                              ))}
                           </div>
                         </Swiper>
                       </section>
@@ -474,6 +483,7 @@ const Page = () => {
                         <h2 className='text-black text-xl dont-bold'>...</h2>
                       </div>
                     )}
+
                   </div>
                 </content-block>
               </span>

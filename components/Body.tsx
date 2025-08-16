@@ -3,6 +3,7 @@ import { useState, useEffect, useRef } from "react";
 import Catslider from './Catslider';
 import ProductTop from './ProductTop';
 import ProductTop1 from './ProductTop1';
+import Shop from './Shop';
 import ReviewsSwiper from './ReviewsSwiper';
 import Rate from './Rate';
 import Offer from './Offer';
@@ -126,7 +127,8 @@ const Body = () => {
         {/* <Box /> */}
 
         <Carousel />
-        <ProductTop />
+        <Shop />
+        {/* <ProductTop /> */}
         <Catslider />
         <ProductTop1 />
         <About />

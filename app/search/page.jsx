@@ -6,56 +6,56 @@ import { CarCard } from "@/components";
 
 
 const Body = () => {
-  const searchParams = useSearchParams()
+  const searchParams = useSearchParams();
   const [allTemp, setTemp] = useState([]);
   const [page, setPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
 
   // Search query parameters from URL
-  const search = searchParams.get('q');
-  const search2 = searchParams.get('cat');
-
-
-
-
-
-
-
+  const search = searchParams.get("q");
+  const search2 = searchParams.get("cat");
 
   const fetchProducts = async (pageNum = 1) => {
     try {
       const params = new URLSearchParams();
-      params.append('page', pageNum);
-      params.append('limit', 10); // or any number you want
+      params.append("page", pageNum);
+      params.append("limit", 10);
 
-      if (search) params.append('q', search);
-      if (search2) params.append('cat', search2);
+      if (search) params.append("q", search);
+      if (search2) params.append("cat", search2);
 
       const res = await fetch(`/api/productsz1?${params.toString()}`);
       const data = await res.json();
 
-      setTemp(data.products || []);
+      let products = data.products || [];
+
+      // 🔹 Apply filters based on category
+      if (search2 === "Ladies") {
+        products = products.filter((p) => true); // keep all (explicitly using filter)
+      } else if (search2 === "Gents") {
+        products = products.filter((p) => p.title.toLowerCase() !== "powder");
+      } else if (search2 === "Unisex") {
+        products = products.filter((p) => p.title.toLowerCase() !== "powder");
+      }
+
+      setTemp(products);
       setTotalPages(data.totalPages || 1);
     } catch (error) {
       console.error("Error fetching products:", error);
     }
   };
 
-
   useEffect(() => {
     fetchProducts(page);
   }, [search, search2, page]);
 
-
   const handleNextPage = () => {
-    if (page < totalPages) setPage(prev => prev + 1);
+    if (page < totalPages) setPage((prev) => prev + 1);
   };
 
   const handlePrevPage = () => {
-    if (page > 1) setPage(prev => prev - 1);
+    if (page > 1) setPage((prev) => prev - 1);
   };
-
-
 
 
 

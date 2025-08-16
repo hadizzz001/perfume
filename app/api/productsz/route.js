@@ -15,24 +15,9 @@ export async function GET(req) {
 
     const skip = (page - 1) * limit;
 
-    const category = searchParams.getAll('category'); 
-
-    // Build query to filter by category and exclude 'Pool Trays'
-    const query = {};
-
-    if (category.length > 0) {
-      query.$and = [
-        { category: { $in: category } },
-        { category: { $ne: 'Pool Trays' } }
-      ];
-    } else {
-      // If no category filter provided, just exclude 'Pool Trays'
-      query.category = { $ne: 'Pool Trays' };
-    }
-
-    const total = await collection.countDocuments(query);
-
-    const data = await collection.find(query)
+    // No filtering, just fetch all products with pagination
+    const total = await collection.countDocuments({});
+    const data = await collection.find({})
       .skip(skip)
       .limit(limit)
       .toArray();
