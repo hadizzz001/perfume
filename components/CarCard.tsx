@@ -33,7 +33,7 @@ const CarCard = ({ temp }: CarCardProps) => {
 
         {/* Price & Discount */}
         <div className="px-2 flex justify-center gap-3 items-center">
-          <span className="line-through text-gray-500 myP2">${price}</span>
+          {/* <span className="line-through text-gray-500 myP2">${price}</span> */}
           <span className="myP2">USD ${discount}</span>
         </div>
       </motion.div>

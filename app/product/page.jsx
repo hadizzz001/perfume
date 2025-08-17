@@ -362,7 +362,7 @@ useEffect(() => {
                       )
                     ) : (
                       <div className="flex items-center space-x-2">
-                        <h1 className="mb-2 myGray line-through myP2">${parseFloat(price).toFixed(2)}</h1>
+                        {/* <h1 className="mb-2 myGray line-through myP2">${parseFloat(price).toFixed(2)}</h1> */}
                         <h1 className="mb-2 myP3">
                           USD ${discount}
                         </h1>
