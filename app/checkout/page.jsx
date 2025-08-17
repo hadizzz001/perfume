@@ -47,10 +47,13 @@ const page = () => {
     phone: "",
   });
 
-  useEffect(() => {
-    // Get all country names using react-select-country-list
-    setAllCountries(countryList().getData());
-  }, []);
+useEffect(() => {
+  // Get all country names using react-select-country-list, but filter out Israel
+  const countries = countryList().getData().filter(
+    c => c.label !== "Israel"
+  );
+  setAllCountries(countries);
+}, []);
 
 
 
