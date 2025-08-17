@@ -28,12 +28,12 @@ export default function OfferHeadline() {
       >
         <SwiperSlide>
           <div style={{ textAlign: "center" }}>
-            Worldwide shipping!
+            Rooted in the heart of Spain.
           </div>
         </SwiperSlide>
         <SwiperSlide>
           <div style={{ textAlign: "center" }}>
-            Free Shipping on all orders above $50
+            We have delivery to whole of Lebanon.
           </div>
         </SwiperSlide>
       </Swiper>

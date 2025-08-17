@@ -10,11 +10,12 @@ import autoTable from 'jspdf-autotable';
 import axios from 'axios';
 import intlTelInput from 'intl-tel-input';
 import 'intl-tel-input/build/css/intlTelInput.css';
+import countryList from 'react-select-country-list'; // Add this at the top
+
 
 
 
 const page = () => {
-
   const { cart, removeFromCart, quantities, subtotal, addToCart } = useCart();
   const [localQuantities, setLocalQuantities] = useState(quantities);
   const [phone, setPhone] = useState("");
@@ -23,21 +24,10 @@ const page = () => {
   const [promoCodes, setPromoCodes] = useState([]); // Store promo codes from API
   const [usedAbcd1234, setUsedAbcd1234] = useState(false);
   const [discountApplied, setDiscountApplied] = useState(false);
-  const [deliveryFee, setDeliveryFee] = useState(subtotal > 50 ? 0 : 5);
+  const [deliveryFee, setDeliveryFee] = useState(5);
   const [total, setTotal] = useState((subtotal + deliveryFee).toFixed(2));
   const [showLink, setShowLink] = useState(false);
   const [country, setCountry] = useState('');
-  const [inputs, setInputs] = useState({
-    fname: "",
-    lname: "",
-    phone: "",
-    country: '',
-    city: '',
-    apt: '',
-    address: '',
-    email: '',
-  });
-
   const [cities, setCities] = useState([]);
   const [countryData, setCountryData] = useState({
     code: '',
@@ -45,6 +35,22 @@ const page = () => {
     dial: '',
   }); 
 
+  const [allCountries, setAllCountries] = useState([]);
+  const [inputs, setInputs] = useState({
+    email: "",
+    fname: "",
+    lname: "",
+    country: "",
+    city: "",
+    address: "",
+    apt: "",
+    phone: "",
+  });
+
+  useEffect(() => {
+    // Get all country names using react-select-country-list
+    setAllCountries(countryList().getData());
+  }, []);
 
 
 
@@ -73,7 +79,7 @@ const page = () => {
     }
 
     // Update delivery fee when subtotal changes
-    // setDeliveryFee(subtotal > 50 ? 0 : 4);
+    // setDeliveryFee(4);
   }, [subtotal]);
 
   useEffect(() => {
@@ -118,11 +124,35 @@ const page = () => {
 
     fetchCities();
 
-    setInputs((prevValues) => ({
-      ...prevValues,
-      country: country,
+    // Find country code for flag and dial code
+    const selected = allCountries.find(c => c.label === country);
+    if (selected) {
+      // Use restcountries.com for code and dial
+      axios.get(`https://restcountries.com/v3.1/name/${encodeURIComponent(country)}?fullText=true`)
+        .then(res => {
+          const data = res.data[0];
+          setCountryData({
+            code: data.cca2,
+            flag: data.flags?.png || `https://flagcdn.com/24x18/${data.cca2?.toLowerCase()}.png`,
+            dial: data.idd?.root && data.idd?.suffixes ? `${data.idd.root}${data.idd.suffixes[0]}` : '',
+          });
+        })
+        .catch(() => {
+          setCountryData({
+            code: '',
+            flag: '',
+            dial: '',
+          });
+        });
+    }
+
+    // Update form state
+    setInputs(prev => ({
+      ...prev,
+      country,
+      city: '', // Reset city when country changes
     }));
-  }, [country]);
+  }, [country, allCountries]);
 
  
 
@@ -186,10 +216,7 @@ useEffect(() => {
 
 
 useEffect(() => {
-  if (subtotal > 50) {
-    setDeliveryFee(0);
-    return;
-  }
+  
 
   const normalizedCity = inputs.city?.trim().toLowerCase();
   if (normalizedCity === 'beirut') {
@@ -230,7 +257,7 @@ useEffect(() => {
     }
 
     // Check for free delivery promo code or subtotal >= 100
-    if (promoCode.toLowerCase() === "freedelivery1" || subtotal > 50) {
+    if (promoCode.toLowerCase() === "freedelivery1"  ) {
       setDeliveryFee(0); // ✅ Delivery fee updates, triggering useEffect to update total
     }
 
@@ -684,19 +711,7 @@ useEffect(() => {
                                 <style
                                   dangerouslySetInnerHTML={{
                                     __html:
-                                      "body{overflow-x: visible;}section {margin-bottom: 0;}.woocommerce-checkout h3 {border: none;line-height: 1.5;padding: 0;margin: 0 0 10px;}#customer_login h2::after, #payment .place-order button[type=submit], #reviews #comments>h2::after, #reviews:not(.electro-advanced-reviews) #comments>h2::after, .address header.title h3::after, .addresses header.title h3::after, .cart-collaterals h2:not(.woocommerce-loop-product__title)::after, .comment-reply-title::after, .comments-title::after, .contact-page-title::after, .cpf-type-range .tm-range-picker .noUi-origin .noUi-handle, .customer-login-form h2::after, .departments-menu .departments-menu-dropdown, .departments-menu .menu-item-has-children>.dropdown-menu, .ec-tabs>li.active a::after, .edit-account legend::after, .footer-widgets .widget-title:after, .header-v1 .navbar-search .input-group .btn, .header-v1 .navbar-search .input-group .form-control, .header-v1 .navbar-search .input-group .input-group-addon, .header-v3 .navbar-search .input-group .btn, .header-v3 .navbar-search .input-group .form-control, .header-v3 .navbar-search .input-group .input-group-addon, .navbar-primary .navbar-mini-cart .dropdown-menu-mini-cart, .pings-title::after, .products-2-1-2 .nav-link.active::after, .products-6-1 header ul.nav .active .nav-link, .products-carousel-tabs .nav-link.active::after, .sidebar .widget-title::after, .sidebar-blog .widget-title::after, .single-product .electro-tabs+section.products>h2::after, .single-product .electro-tabs~div.products>h2::after, .single-product .woocommerce-tabs+section.products>h2::after, .single-product .woocommerce-tabs~div.products>h2::after, .track-order h2::after, .wc-tabs>li.active a::after, .widget.widget_tag_cloud .tagcloud a:focus, .widget.widget_tag_cloud .tagcloud a:hover, .widget_electro_products_carousel_widget .section-products-carousel .owl-nav .owl-next:hover, .widget_electro_products_carousel_widget .section-products-carousel .owl-nav .owl-prev:hover, .widget_price_filter .ui-slider .ui-slider-handle:last-child, .woocommerce-account h2::after, .woocommerce-checkout h3::after, .woocommerce-edit-address form h3::after, .woocommerce-order-received h2::after, .wpb-accordion .vc_tta.vc_general .vc_tta-panel.vc_active .vc_tta-panel-heading .vc_tta-panel-title>a i, section header .h1::after, section header h1::after, section.section-onsale-product, section.section-onsale-product-carousel .onsale-product-carousel, section.section-product-cards-carousel header ul.nav .active .nav-link{\n\tdisplay:none;\n}body #wfacp-e-form .woocommerce-checkout #payment ul.payment_methods li {padding: 11px !important;}body #wfacp-e-form #shipping_method li label > span {position: relative;right: auto;left: auto;top: auto;}body #wfacp-e-form .wfacp_order_summary tr.shipping > td{display: table-cell;flex: auto;}body #wfacp-e-form .wfacp_order_summary tr.shipping > th {display: table-cell;flex: auto;}body #wfacp-e-form .woocommerce-checkout-review-order-table tbody > tr{display: table-row;width: 100%;justify-content: initial;}body #wfacp-e-form .woocommerce-checkout-review-order-table tfoot > tr{display: table-row;width: 100%;justify-content: initial;}body #wfacp-e-form .woocommerce-checkout-review-order-table thead > tr{display: table-row;width: 100%;justify-content: initial;}body #wfacp-e-form .wfacp_shipping_options .border:last-child table {margin-bottom: 0;}body #wfacp-e-form .wfacp_main_form .wfacp_shipping_table.wfacp_shipping_recurring tr.shipping:last-child td {padding-bottom: 0;margin-bottom: 0;}"
-                                  }}
-                                />
-                                <style
-                                  dangerouslySetInnerHTML={{
-                                    __html:
-                                      "body .wfacp-section.wfacp_payment.wfacp_hide_payment_part {visibility: visible;position: relative;z-index: 0;left: 0}\nbody span#ppcp-credit-card-gateway-card-number {height: 40px !important;}\nbody span#ppcp-credit-card-gateway-card-expiry {height: 40px !important;}\nbody span#ppcp-credit-card-gateway-card-cvc {height: 40px !important;}"
-                                  }}
-                                />
-                                <style
-                                  dangerouslySetInnerHTML={{
-                                    __html:
-                                      "body #wfacp-e-form  #payment li.wc_payment_method input.input-radio:checked::before{background-color:#fff;}body #wfacp-e-form  #payment.wc_payment_method input[type=radio]:checked:before{background-color:#fff;}body #wfacp-e-form  button[type=submit]:not(.white):not(.black){background-color:#fff;}body #wfacp-e-form  button[type=button]:not(.white):not(.black){background-color:#fff;}body #wfacp-e-form .wfacp-coupon-section .wfacp-coupon-page .wfacp-coupon-field-btn{background-color:#fff;}body #wfacp-e-form input[type=checkbox]:checked{background-color:#fff;}body #wfacp-e-form #payment input[type=checkbox]:checked{background-color:#fff;}body #wfacp-e-form .wfacp_main_form.woocommerce .woocommerce-input-wrapper .wfacp-form-control:checked{background-color:#fff;}body #wfacp-e-form .wfacp_main_form.woocommerce input[type=checkbox]:checked{background-color:#fff;}body #wfacp-e-form .wfacp_main_form .button.button#place_order{background-color:#fff;}body #wfacp-e-form .wfacp_main_form .button.wfacp_next_page_button{background-color:#fff;}body #wfacp-e-form .wfacp_main_form  .wfacp_payment #ppcp-hosted-fields .button{background-color:#fff;}body #wfacp-e-form .form-row:not(.woocommerce-invalid-required-field) .wfacp-form-control:not(.input-checkbox):focus{border-color:#fff ;}body #wfacp-e-form  p.form-row:not(.woocommerce-invalid-required-field) .wfacp-form-control:not(.input-checkbox):focus{box-shadow:0 0 0 1px #fff ;}body #wfacp-e-form .wfacp_main_form .form-row:not(.woocommerce-invalid-required-field) .woocommerce-input-wrapper .select2-container .select2-selection--single .select2-selection__rendered:focus{border-color:#fff ;}body #wfacp-e-form .wfacp_main_form.woocommerce .form-row:not(.woocommerce-invalid-required-field) .woocommerce-input-wrapper .select2-container .select2-selection--single .select2-selection__rendered:focus{box-shadow:0 0 0 1px #fff;}body #wfacp-e-form .wfacp_main_form .form-row:not(.woocommerce-invalid-required-field) .woocommerce-input-wrapper .select2-container .select2-selection--single:focus>span.select2-selection__rendered{box-shadow:0 0 0 1px #fff ;}body #wfacp-e-form .wfacp_main_form.woocommerce #payment li.wc_payment_method input.input-radio:checked{border-color:#fff;}body #wfacp-e-form .wfacp_main_form.woocommerce #payment.wc_payment_method input[type=radio]:checked{border-color:#fff;}body #wfacp-e-form .wfacp_main_form.woocommerce input[type=radio]:checked{border-color:#fff;}body #wfacp-e-form input[type=radio]:checked{border-color:#fff;}body #wfacp-e-form .wfacp_main_form.woocommerce #add_payment_method #payment ul.payment_methods li input[type=radio]:checked{border-color:#fff;}body #wfacp-e-form #payment ul.payment_methods li input[type=radio]:checked{border-color:#fff;}body #wfacp-e-form .wfacp_main_form.woocommerce .woocommerce-cart #payment ul.payment_methods li input[type=radio]:checked{border-color:#fff;}body #wfacp-e-form .wfacp_main_form.woocommerce .woocommerce-checkout #payment ul.payment_methods li input[type=radio]:checked{border-color:#fff;}body #wfacp-e-form .wfacp_main_form.woocommerce #wfacp_checkout_form input[type=radio]:checked{border-color:#fff;}body #wfacp-e-form .wfacp-form input[type=checkbox]:checked{border-color:#fff;}body #wfacp-e-form .wfacp_main_form #payment input[type=checkbox]:checked{border-color:#fff;}body #wfacp-e-form .wfacp_main_form .woocommerce-input-wrapper .wfacp-form-control:checked{border-color:#fff;}body #wfacp-e-form .wfacp_main_form input[type=checkbox]:checked{border-width: 8px;}body #wfacp-e-form .wfacp_main_form.woocommerce .form-row:not(.woocommerce-invalid-required-field) .woocommerce-input-wrapper .select2-container .select2-selection--single:focus>span.select2-selection__rendered{border-color:#fff;}body #wfacp-e-form .wfacp_main_form #payment li.wc_payment_method input.input-radio:checked{border-width:5px;}body #wfacp-e-form .wfacp_main_form #payment.wc_payment_method input[type=radio]:checked{border-width:5px;}body #wfacp-e-form .wfacp_main_form input[type=radio]:checked{border-width:5px;}body #wfacp-e-form .wfacp_main_form #add_payment_method #payment ul.payment_methods li input[type=radio]:checked{border-width:5px;}body #wfacp-e-form .wfacp_main_form input[type=checkbox]:after{display: block;}body #wfacp-e-form .wfacp_main_form input[type=checkbox]:before{display: none;}body #wfacp-e-form #payment li.wc_payment_method input.input-radio:checked::before{display:none;}body #wfacp-e-form #payment.wc_payment_method input[type=radio]:checked:before{display:none;}body #wfacp-e-form input[type=radio]:checked:before{display:none;}body #wfacp-e-form .wfacp_main_form.woocommerce input[type=radio]:checked:before{display:none;}"
+                                      "body{overflow-x: visible;}section {margin-bottom: 0;}.woocommerce-checkout h3 {border: none;line-height: 1.5;padding: 0;margin: 0 0 10px;}#customer_login h2::after, #payment .place-order button[type=submit], #reviews #comments>h2::after, #reviews:not(.electro-advanced-reviews) #comments>h2::after, .address header.title h3::after, .addresses header.title h3::after, .cart-collaterals h2:not(.woocommerce-loop-product__title)::after, .comment-reply-title::after, .comments-title::after, .contact-page-title::after, .cpf-type-range .tm-range-picker .noUi-origin .noUi-handle, .customer-login-form h2::after, .departments-menu .departments-menu-dropdown, .departments-menu .menu-item-has-children>.dropdown-menu, .ec-tabs>li.active a::after, .edit-account legend::after, .footer-widgets .widget-title:after, .header-v1 .navbar-search .input-group .btn, .header-v1 .navbar-search .input-group .form-control, .header-v1 .navbar-search .input-group .input-group-addon, .header-v3 .navbar-search .input-group .btn, .header-v3 .navbar-search .input-group .form-control, .header-v3 .navbar-search .input-group .input-group-addon, .navbar-primary .navbar-mini-cart .dropdown-menu-mini-cart, .pings-title::after, .products-2-1-2 .nav-link.active::after, .products-6-1 header ul.nav .active .nav-link, .products-carousel-tabs .nav-link.active::after, .sidebar .widget-title::after, .sidebar-blog .widget-title::after, .single-product .electro-tabs+section.products>h2::after, .single-product .electro-tabs~div.products>h2::after, .single-product .woocommerce-tabs+section.products>h2::after, .single-product .woocommerce-tabs~div.products>h2::after, .track-order h2::after, .wc-tabs>li.active a::after, .widget.widget_tag_cloud .tagcloud a:focus, .widget.widget_tag_cloud .tagcloud a:hover, .widget_electro_products_carousel_widget .section-products-carousel .owl-nav .owl-next:hover, .widget_electro_products_carousel_widget .section-products-carousel .owl-nav .owl-prev:hover, .widget_price_filter .ui-slider .ui-slider-handle:last-child, .woocommerce-account h2::after, .woocommerce-checkout h3::after, .woocommerce-edit-address form h3::after, .woocommerce-order-received h2::after, .wpb-accordion .vc_tta.vc_general .vc_tta-panel.vc_active .vc_tta-panel-heading .vc_tta-panel-title>a i, section header .h1::after, section header h1::after, section.section-onsale-product, section.section-onsale-product-carousel .onsale-product-carousel, section.section-product-cards-carousel header ul.nav .active .nav-link{\n\tdisplay:none;\n}body #wfacp-e-form .woocommerce-checkout #payment ul.payment_methods li {padding: 11px !important;}body #wfacp-e-form #shipping_method li label > span {position: relative;right: auto;left: auto;top: auto;}body #wfacp-eform .wfacp-coupon-section .wfacp-coupon-page .wfacp-coupon-field-btn{background-color:#fff;}body #wfacp-e-form input[type=checkbox]:checked{background-color:#fff;}body #wfacp-e-form #payment input[type=checkbox]:checked{background-color:#fff;}body #wfacp-e-form .wfacp_main_form.woocommerce .woocommerce-input-wrapper .wfacp-form-control:checked{background-color:#fff;}body #wfacp-e-form .wfacp_main_form.woocommerce input[type=checkbox]:checked{background-color:#fff;}body #wfacp-e-form .wfacp_main_form .button.button#place_order{background-color:#fff;}body #wfacp-e-form .wfacp_main_form .button.wfacp_next_page_button{background-color:#fff;}body #wfacp-eform .wfacp-main .wfacp_payment #ppcp-hosted-fields .button{background-color:#fff;}body #wfacp-e-form .form-row:not(.woocommerce-invalid-required-field) .wfacp-form-control:not(.input-checkbox):focus{border-color:#fff ;}body #wfacp-e-form  p.form-row:not(.woocommerce-invalid-required-field) .wfacp-form-control:not(.input-checkbox):focus{box-shadow:0 0 0 1px #fff ;}body #wfacp-e-form .wfacp_main_form .form-row:not(.woocommerce-invalid-required-field) .woocommerce-input-wrapper .select2-container .select2-selection--single .select2-selection__rendered:focus{border-color:#fff ;}body #wfacp-e-form .wfacp_main_form.woocommerce .form-row:not(.woocommerce-invalid-required-field) .woocommerce-input-wrapper .select2-container .select2-selection--single .select2-selection__rendered:focus{box-shadow:0 0 0 1px #fff;}body #wfacp-e-form .wfacp_main_form .form-row:not(.woocommerce-invalid-required-field) .woocommerce-input-wrapper .select2-container .select2-selection--single:focus>span.select2-selection__rendered{box-shadow:0 0 0 1px #fff ;}body #wfacp-e-form .wfacp_main_form.woocommerce #payment li.wc_payment_method input.input-radio:checked{border-color:#fff;}body #wfacp-eform .wfacp-main .wfacp_payment #ppcp-hosted-fields .button{border-color:#fff;}body #wfacp-e-form .wfacp_main_form.woocommerce #add_payment_method #payment ul.payment_methods li input[type=radio]:checked{border-color:#fff;}body #wfacp-e-form #payment ul.payment_methods li input[type=radio]:checked{border-color:#fff;}body #wfacp-eform .wfacp-main .wfacp_payment #ppcp-hosted-fields .button{border-width:5px;}body #wfacp-e-form .wfacp_main_form input[type=radio]:checked{border-width:5px;}body #wfacp-eform .wfacp-main .wfacp_payment #ppcp-hosted-fields .button{border-width:5px;}body #wfacp-e-form .wfacp_main_form input[type=checkbox]:after{display: block;}body #wfacp-e-form .wfacp_main_form input[type=checkbox]:before{display: none;}body #wfacp-e-form #payment li.wc_payment_method input.input-radio:checked::before{display:none;}body #wfacp-eform .wfacp-main .wfacp_payment #ppcp-hosted-fields .button{display:none;}body #wfacp-e-form #payment.wc_payment_method input[type=radio]:checked:before{display:none;}body #wfacp-eform .wfacp-main .wfacp_payment #ppcp-hosted-fields .button{display:none;}body #wfacp-eform .wfacp-main .wfacp_payment #ppcp-hosted-fields .button{display:none;}body #wfacp-e-form input[type=radio]:checked:before{display:none;}body #wfacp-e-form .wfacp_main_form.woocommerce input[type=radio]:checked:before{display:none;}"
                                   }}
                                 />
                                 <style
@@ -894,17 +909,21 @@ useEffect(() => {
                                               </abbr>
                                             </label>
                                             <span className="woocommerce-input-wrapper">
-                                              <input
-                                                type="text"
+                                              <select
                                                 value={inputs.country}
+                                                onChange={e => {
+                                                  setCountry(e.target.value);
+                                                }}
                                                 className="input-text wfacp-form-control"
                                                 name="billing_country"
                                                 id="billing_country"
-                                                placeholder="Country *"
-                                                defaultValue=""
-                                                autoComplete="country"
-                                                readOnly
-                                              />
+                                                required
+                                              >
+                                                <option value="">Select Country*</option>
+                                                {allCountries.map((countryObj, idx) => (
+                                                  <option key={countryObj.value} value={countryObj.label}>{countryObj.label}</option>
+                                                ))}
+                                              </select>
                                             </span>
                                           </p>
 
@@ -939,7 +958,6 @@ useEffect(() => {
 
                                               <select
                                                 value={inputs.city}
-                                                onChange={(e) => setCity(e.target.value)}
                                                 onChange={handleTextboxChange('city')}
                                                 className="input-text wfacp-form-control"
                                                 name="billing_city"
@@ -1037,6 +1055,7 @@ useEffect(() => {
                                             className="form-row form-row-wide wfacp-form-control-wrapper wfacp-col-full wfacp_field_required"
                                             id="billing_phone_field"
                                             data-priority={110}
+                                         
                                           >
                                             <label htmlFor="billing_phone" className="wfacp-form-control-label">
                                               Phone&nbsp;
