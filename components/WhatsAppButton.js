@@ -161,9 +161,7 @@ const createWhatsAppURL = (inputs, items, total, delivery, code, subtotal) => {
       const sizeObj = colorObj?.sizes?.find(s => s.size === item.selectedSize);
       return sizeObj?.price ?? item.discount;
     })()}
-
-      - Color: ${item.selectedColor}
-      - Size: ${item.selectedSize}
+ 
       - Image: ${item.img[0]} 
     `).join('\n')}
 

@@ -171,7 +171,7 @@ export default function OfferPopup() {
               }}
               className="myBB"
             >
-              { "Abcd12345"}
+              { "Abcd1234"}
               {/* 🔥 Copy Button */}
               <button
                 onClick={handleCopy}

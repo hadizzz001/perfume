@@ -46,8 +46,7 @@ ${items.map((item: any, index: number) => `
       const sizeObj = colorObj?.sizes?.find(s => s.size === item.selectedSize);
       return sizeObj?.price ?? item.discount;
     })()}
-  - Color: ${item.selectedColor}
-  - Size: ${item.selectedSize}
+ 
   - Image: ${item.img[0]}
 `).join('\n')}
 
@@ -57,10 +56,10 @@ Delivery fee: $${delivery}
   `;
 
   await resend.emails.send({
-    from: "info@anazon.hadizproductions.com",
+    from: "noreply@ovoxa.beauty",
     // to: "alihadimedlej001@gmail.com",
-    to: "batoul@test0.hadizproductions.com",
-    subject: "New Order from Website",
+    to: email+"",
+    subject: "Order Successful",
     text: message,
   });
 

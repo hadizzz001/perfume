@@ -218,15 +218,8 @@ useEffect(() => {
 
 
 
-useEffect(() => {
-  
-
-  const normalizedCity = inputs.city?.trim().toLowerCase();
-  if (normalizedCity === 'beirut') {
-    setDeliveryFee(3);
-  } else {
-    setDeliveryFee(5);
-  }
+useEffect(() => { 
+    setDeliveryFee(5); 
 }, [subtotal, inputs.city]);
 
 
