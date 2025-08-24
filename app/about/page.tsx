@@ -74,7 +74,7 @@ export default function Home() {
             className="content-image"
           >
             <img
-              src="https://res.cloudinary.com/dzfuvfl10/image/upload/v1755268735/202125554_188491256612142_1252677805009413673_n_gbyatf.jpg"
+              src="https://res.cloudinary.com/dzfuvfl10/image/upload/v1756055316/f8a09d1e-ed85-4ee8-a313-438af1d90f11_yvel0n.webp"
               alt="Company"
               style={{ maxWidth: "100%", height: "auto" }}
             />
